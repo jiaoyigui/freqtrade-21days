@@ -1,0 +1,61 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  # 策略1：均值回归
+  freqtrade-mr:
+    image: freqtradeorg/freqtrade:stable
+    restart: always
+    volumes:
+      - ./user_data:/freqtrade/user_data
+      - ./configs/mr_config.json:/freqtrade/config.json
+    command: trade --config /freqtrade/config.json --strategy MeanReversionStrategy
+    environment:
+      - FREQTRADE__DB_URL=sqlite:///user_data/db/mr.sqlite
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # 策略2：趋势跟随
+  freqtrade-tf:
+    image: freqtradeorg/freqtrade:stable
+    restart: always
+    volumes:
+      - ./user_data:/freqtrade/user_data
+      - ./configs/tf_config.json:/freqtrade/config.json
+    command: trade --config /freqtrade/config.json --strategy TrendFollowingStrategy
+    environment:
+      - FREQTRADE__DB_URL=sqlite:///user_data/db/tf.sqlite
+
+  # 策略3：价格行为
+  freqtrade-pa:
+    image: freqtradeorg/freqtrade:stable
+    restart: always
+    volumes:
+      - ./user_data:/freqtrade/user_data
+      - ./configs/pa_config.json:/freqtrade/config.json
+    command: trade --config /freqtrade/config.json --strategy SMCPriceActionStrategy
+    environment:
+      - FREQTRADE__DB_URL=sqlite:///user_data/db/pa.sqlite
+
+  # 监控
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=your_password
+
+volumes:
+  grafana-data:

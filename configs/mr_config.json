@@ -1,0 +1,22 @@
+{
+    "_comment": "mr_config.json - 均值回归实例",
+    "stake_currency": "USDT",
+    "stake_amount": "unlimited",
+    "tradable_balance_ratio": 0.3,
+    "max_open_trades": 5,
+    "dry_run": false,
+    
+    "exchange": {
+        "name": "binance",
+        "key": "",
+        "secret": ""
+    },
+    
+    "api_server": {
+        "enabled": true,
+        "listen_ip_address": "0.0.0.0",
+        "listen_port": 8081,
+        "username": "freqtrade",
+        "password": "your_api_password"
+    }
+}
